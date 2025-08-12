@@ -99,8 +99,8 @@ func (s *Server) HandleRoutes() {
 		AllowedOrigins:   []string{"http://localhost:5173", "http:localhost:5173/*"},
 		AllowCredentials: true,
 		Debug:            true,
-		AllowedHeaders:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Origin", "Content-Type", "Accept", "Authorization"},
 	})
 
 	handler := c.Handler(router)
