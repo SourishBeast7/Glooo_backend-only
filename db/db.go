@@ -77,12 +77,21 @@ func (s *Storage) FindUserByEmailGorm(email string) (*models.User, error) {
 	return u, nil
 }
 
-func (s *Storage) FindUsersUsingSubstring(str string) ([]*models.User, error) {
+func (s *Storage) FindUsersUsingSubstring(id uint, str string) ([]*models.User, error) {
 	users := make([]*models.User, 0)
+	user := new(models.User)
+	if err := s.db.Model(&models.User{}).Where("id = ?", id).First(user).Error; err != nil {
+		return nil, err
+	}
 	if err := s.db.Model(&models.User{}).Where("email LIKE ?", "%"+str+"%").Find(&users).Error; err != nil {
 		return nil, err
 	}
-	return users, nil
+	for i, v := range users {
+		if v.Email == user.Email {
+			return append(users[:i], users[i+1:]...), nil
+		}
+	}
+	return nil, errors.New("an error occurred")
 }
 
 func (s *Storage) UpdateUser(user *models.UpdateUser) (bool, error) {
