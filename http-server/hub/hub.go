@@ -63,16 +63,17 @@ func (h *Hub) Run(db *db.Storage) {
 
 func (h *Hub) Readloop(c *Client) {
 	defer func() {
-		h.Mutex.Lock()
-		delete(h.Clients, c.ID)
-		h.Mutex.Unlock()
-		defer c.Conn.Close()
+		h.Unregister <- c
 	}()
 	for {
 		message := new(models.Message)
 		message.SenderID = c.ID
 		err := c.Conn.ReadJSON(message)
 		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseInvalidFramePayloadData) {
+				h.Unregister <- c
+				return
+			}
 			log.Println(err)
 			continue
 		}

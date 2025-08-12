@@ -12,7 +12,7 @@ type User struct {
 	Password         string           `gorm:"not null" json:"-"`
 	Friends          []*User          `gorm:"many2many:user_friends;joinForeignKey:UserID;joinReferences:FriendID" json:"friends"`
 	Chats            []*Chat          `gorm:"many2many:user_chats" json:"chats"`
-	SentRequests     []*FriendRequest `gorm:"foreignKey:FromID;constraint:OnDelete:CASCADE" json:"sent_requests"`
+	SentRequests     []*FriendRequest `gorm:"foreignKey:FromID;constraint:OnDelete:CASCADE" json:"sent_requests,omitempty"`
 	ReceivedRequests []*FriendRequest `gorm:"foreignKey:ToID;constraint:OnDelete:CASCADE" json:"received_requests"`
 	SentMessages     []*Message       `gorm:"foreignKey:SenderID;constraint:OnDelete:CASCADE"`
 	ReceivedMessages []*Message       `gorm:"foreignKey:ReceiverID;constraint:OnDelete:CASCADE"`
@@ -30,19 +30,19 @@ type Message struct {
 	gorm.Model
 	Content    string `gorm:"type:text;not null" json:"content"`
 	ChatID     uint   `gorm:"index;not null" json:"chat_id"`
-	Chat       *Chat  `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+	Chat       *Chat  `gorm:"constraint:OnDelete:CASCADE;" json:"-"`
 	SenderID   uint   `gorm:"index;not null" json:"sender_id"`
-	Sender     *User
-	ReceiverID uint `gorm:"index;not null" json:"receiver_id"`
-	Receiver   *User
+	Sender     *User  `gorm:"foreignKey:SenderID;constraint:OnDelete:CASCADE;" json:"sender,omitempty"`
+	ReceiverID uint   `gorm:"index;not null" json:"receiver_id"`
+	Receiver   *User  `gorm:"foreignKey:ReceiverID;constraint:OnDelete:CASCADE;" json:"receiver,omitempty"`
 }
 
 type FriendRequest struct {
 	gorm.Model
 	FromID uint   `gorm:"index;not null" json:"from_id"`
-	From   *User  `gorm:"foreignKey:FromID;constraint:OnDelete:CASCADE" json:"from"`
+	From   *User  `gorm:"foreignKey:FromID;constraint:OnDelete:CASCADE" json:"from,omitempty"`
 	ToID   uint   `gorm:"index;not null" json:"to_id"`
-	To     *User  `gorm:"foreignKey:ToID;constraint:OnDelete:CASCADE" json:"to"`
+	To     *User  `gorm:"foreignKey:ToID;constraint:OnDelete:CASCADE" json:"to,omitempty"`
 	Status string `gorm:"type:enum('pending','accepted','rejected');default:'pending'" json:"status"`
 }
 
@@ -55,4 +55,11 @@ type UpdateUser struct {
 type LoginUser struct {
 	Email    string
 	Password string
+}
+
+type HandleRequest struct {
+	FromID uint
+	ToID   uint
+	Status string
+	Action string
 }
