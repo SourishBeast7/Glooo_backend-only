@@ -172,11 +172,14 @@ func (s *Server) handleAuthRoutes(router *mux.Router) {
 			return err
 		}
 		var secMode bool
+		var siteMode http.SameSite
 		env := os.Getenv("ENVIRONMENT")
 		if env == "dev" {
 			secMode = false
+			siteMode = http.SameSiteLaxMode
 		} else {
 			secMode = true
+			siteMode = http.SameSiteNoneMode
 		}
 		id := strconv.Itoa(int(user.ID))
 		finalToken := fmt.Sprintf("Bearer %s", token)
@@ -185,7 +188,7 @@ func (s *Server) handleAuthRoutes(router *mux.Router) {
 			Value:    finalToken,
 			HttpOnly: true,
 			Path:     "/",
-			SameSite: http.SameSiteLaxMode,
+			SameSite: siteMode,
 			Secure:   secMode, // Set to true in production with HTTPS
 		})
 		http.SetCookie(w, &http.Cookie{
@@ -193,7 +196,7 @@ func (s *Server) handleAuthRoutes(router *mux.Router) {
 			Value:    id,
 			HttpOnly: true,
 			Path:     "/",
-			SameSite: http.SameSiteLaxMode,
+			SameSite: siteMode,
 			Secure:   secMode, // Set to true in production with HTTPS
 		})
 		return WriteJson(w, http.StatusOK, Response{
