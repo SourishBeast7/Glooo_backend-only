@@ -209,6 +209,17 @@ func (s *Server) handleAuthRoutes(router *mux.Router) {
 
 func (s *Server) handleApiRoutes(router *mux.Router) {
 
+	router.HandleFunc("/search-user/{email}", m.AuthMiddleWare(makeHttpHandler(func(w http.ResponseWriter, r *http.Request) error {
+		email := mux.Vars(r)["email"]
+		users, err := s.store.FindUsersUsingSubstring(email)
+		if err != nil {
+			return err
+		}
+		return WriteJson(w, http.StatusOK, Response{
+			"users": users,
+		})
+	})))
+
 	router.HandleFunc("/getfriends", m.AuthMiddleWare(makeHttpHandler(func(w http.ResponseWriter, r *http.Request) error {
 		cookie, err := r.Cookie("id")
 		if err != nil {

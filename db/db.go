@@ -77,6 +77,14 @@ func (s *Storage) FindUserByEmailGorm(email string) (*models.User, error) {
 	return u, nil
 }
 
+func (s *Storage) FindUsersUsingSubstring(str string) ([]*models.User, error) {
+	users := make([]*models.User, 0)
+	if err := s.db.Model(&models.User{}).Where("email LIKE ?", "%"+str+"%").Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 func (s *Storage) UpdateUser(user *models.UpdateUser) (bool, error) {
 	allowedFields := map[string]bool{
 		"Name":     true,
