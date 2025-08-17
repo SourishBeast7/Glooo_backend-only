@@ -19,7 +19,7 @@ type Storage struct {
 type Response map[string]any
 
 func NewStorage() *Storage {
-	dsn := os.Getenv("DB_URL")
+	dsn := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 
