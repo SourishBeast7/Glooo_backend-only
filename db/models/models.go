@@ -58,8 +58,8 @@ type LoginUser struct {
 }
 
 type HandleRequest struct {
-	FromID uint
-	ToID   uint
-	Status string
-	Action string
+	FromID uint   `json:"from_id"`
+	ToID   uint   `json:"to_id"`
+	Status string `json:"status"`
+	Action string `json:"action"`
 }
