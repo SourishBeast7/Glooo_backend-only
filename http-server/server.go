@@ -321,7 +321,7 @@ func (s *Server) handleFriendsRoute(router *mux.Router) {
 			return err
 		}
 		return WriteJson(w, http.StatusOK, Response{
-			"success": "",
+			"success": true,
 		})
 	}))).Methods(http.MethodPost)
 }
