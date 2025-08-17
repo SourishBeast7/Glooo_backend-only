@@ -212,6 +212,9 @@ func (s *Server) handleApiRoutes(router *mux.Router) {
 	router.HandleFunc("/search-user/{email}", m.AuthMiddleWare(makeHttpHandler(func(w http.ResponseWriter, r *http.Request) error {
 		email := mux.Vars(r)["email"]
 		cookie, err := r.Cookie("id")
+		if err != nil {
+			return err
+		}
 		id := StringToUint(cookie.Value)
 		users, err := s.store.FindUsersUsingSubstring(id, email)
 		if err != nil {
