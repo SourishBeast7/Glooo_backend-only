@@ -201,6 +201,10 @@ func (s *Storage) HandleFriendRequest(req *models.HandleRequest) error {
 			tx.Rollback()
 			return err
 		}
+		if err := tx.Model(&models.FriendRequest{}).Delete(newReq).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
 		tx.Commit()
 		// Creating chat for friends
 		if err := s.CreateChat("", user, friend); err != nil {

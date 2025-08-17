@@ -53,8 +53,8 @@ type UpdateUser struct {
 }
 
 type LoginUser struct {
-	Email    string
-	Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type HandleRequest struct {

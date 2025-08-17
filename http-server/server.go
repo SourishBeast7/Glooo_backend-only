@@ -256,6 +256,13 @@ func (s *Server) handleApiRoutes(router *mux.Router) {
 		if err != nil {
 			return err
 		}
+		for _, chat := range chats {
+			for i, user := range chat.Users {
+				if user.ID == uid {
+					chat.Users = append(chat.Users[:i], chat.Users[i+1:]...)
+				}
+			}
+		}
 		return WriteJson(w, http.StatusOK, Response{
 			"chats": chats,
 		})
